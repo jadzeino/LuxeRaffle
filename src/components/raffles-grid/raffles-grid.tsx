@@ -29,13 +29,12 @@ export default function RafflesGrid({ raffles }: { raffles: Raffle[] }) {
           </h2>
         </div>
         <p className="max-w-xl text-sm leading-6 text-muted-foreground">
-          Server-rendered availability, validated API responses, and cached
-          raffle data refreshed every minute.
+          New entries every 60 days. Live inventory across all active raffles.
         </p>
       </div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {raffles.map((raffle) => (
-          <RaffleTile key={raffle.id} raffle={raffle} />
+        {raffles.map((raffle, index) => (
+          <RaffleTile key={raffle.id} raffle={raffle} index={index} />
         ))}
       </div>
     </section>

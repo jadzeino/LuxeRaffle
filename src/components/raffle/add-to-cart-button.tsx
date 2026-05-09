@@ -9,9 +9,11 @@ import { Button } from '@/components/ui/button';
 export function AddToCartButton({
   raffleId,
   raffleName,
+  disabled: disabledProp = false,
 }: {
   raffleId: number;
   raffleName: string;
+  disabled?: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
   const [added, setAdded] = useOptimistic(false);
@@ -19,6 +21,20 @@ export function AddToCartButton({
   const [error, setError] = useState('');
   const liveRegionId = useId();
   const router = useRouter();
+
+  if (disabledProp) {
+    return (
+      <Button
+        type="button"
+        className="h-11 flex-1 cursor-not-allowed border border-input bg-background text-muted-foreground shadow-sm"
+        disabled
+        aria-label={`${raffleName} is sold out`}
+      >
+        <ShoppingBag aria-hidden="true" />
+        Sold out
+      </Button>
+    );
+  }
 
   return (
     <>
