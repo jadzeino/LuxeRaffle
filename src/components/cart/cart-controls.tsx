@@ -9,10 +9,12 @@ export function CartControls({
   raffleId,
   quantity,
   label,
+  onBeforeRemove,
 }: {
   raffleId: number;
   quantity: number;
   label: string;
+  onBeforeRemove?: () => void;
 }) {
   const [isPending, startTransition] = useTransition();
   const [optimisticQuantity, setOptimisticQuantity] = useOptimistic(quantity);
@@ -56,6 +58,7 @@ export function CartControls({
         disabled={isPending}
         aria-label={`Remove ${label} from cart`}
         onClick={() => {
+          onBeforeRemove?.();
           startTransition(async () => {
             setOptimisticQuantity(0);
             await removeCartItem(raffleId);
