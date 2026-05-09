@@ -55,6 +55,12 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="grid min-h-dvh grid-rows-[auto_1fr_auto]">
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:left-4 focus:top-4 focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:ring-2 focus:ring-ring"
+          >
+            Skip to main content
+          </a>
           <AppHeader theme={theme} />
           {children}
           <AppFooter />

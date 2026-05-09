@@ -14,7 +14,7 @@ export default async function LoginPage({
   const { next } = await searchParams;
 
   return (
-    <main className="flex w-full items-center justify-center bg-muted/30 p-6 py-20 md:p-10">
+    <main id="main-content" className="flex w-full items-center justify-center bg-muted/30 p-6 py-20 md:p-10">
       <div className="w-full max-w-sm">
         <LoginForm next={next} />
       </div>

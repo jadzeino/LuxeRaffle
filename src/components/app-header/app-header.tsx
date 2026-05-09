@@ -4,6 +4,7 @@ import { UserIcon } from '../user-icon/user-icon';
 import { getCurrentUser } from '@/lib/auth/session';
 import { getCartCount, getCartItems } from '@/lib/cart/cookies';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
+import { MobileNav } from '@/components/layout/mobile-nav';
 import type { Theme } from '@/lib/theme';
 
 const CartCounter = ({ items }: { items: number }) => (
@@ -53,6 +54,7 @@ export const AppHeader = async ({ theme }: { theme: Theme }) => {
         </div>
 
         <div className="flex items-center gap-3">
+          <MobileNav />
           <ThemeToggle initialTheme={theme} />
           {user ? (
             <Link

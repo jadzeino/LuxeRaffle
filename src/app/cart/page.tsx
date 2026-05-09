@@ -29,7 +29,7 @@ export default async function CartPage() {
   }
 
   return (
-    <main className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_360px] lg:px-8">
+    <main id="main-content" className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[1fr_360px] lg:px-8">
       <section aria-labelledby="cart-heading">
         <p className="text-sm font-semibold uppercase tracking-[0.25em] text-muted-foreground">
           Cart

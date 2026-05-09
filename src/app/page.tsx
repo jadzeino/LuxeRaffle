@@ -71,7 +71,7 @@ function RafflesErrorState() {
 
 export default function Home() {
   return (
-    <main>
+    <main id="main-content">
       <section className="relative isolate min-h-[620px] overflow-hidden bg-foreground text-background">
         <Image
           src="https://images.unsplash.com/photo-1701205143024-4d39391acd35"
