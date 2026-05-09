@@ -1,4 +1,4 @@
-import { User } from '@/types/User';
+import type { AuthUser as User } from '@/lib/schemas/auth';
 
 export const encryptToken = (user: User) => {
   try {
