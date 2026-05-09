@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { cookies } from 'next/headers';
 import { cartSchema, type CartItem } from '@/lib/schemas/cart';
 
@@ -17,7 +18,7 @@ function normalizeCart(items: CartItem[]) {
   );
 }
 
-export async function getCartItems(): Promise<CartItem[]> {
+export const getCartItems = cache(async (): Promise<CartItem[]> => {
   const value = (await cookies()).get(CART_COOKIE)?.value;
 
   if (!value) {
@@ -30,7 +31,7 @@ export async function getCartItems(): Promise<CartItem[]> {
   } catch {
     return [];
   }
-}
+});
 
 export async function setCartItems(items: CartItem[]) {
   (await cookies()).set(CART_COOKIE, JSON.stringify(normalizeCart(items)), {
