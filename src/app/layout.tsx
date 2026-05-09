@@ -5,6 +5,7 @@ import { AppFooter } from '@/components/app-footer/app-footer';
 import { AppHeader } from '@/components/app-header/app-header';
 import { siteDescription, siteName, siteUrl } from '@/lib/site';
 import { isTheme, THEME_COOKIE } from '@/lib/theme';
+import { Toaster } from 'sonner';
 import './globals.css';
 
 const geistSans = Geist({
@@ -65,6 +66,7 @@ export default async function RootLayout({
           {children}
           <AppFooter />
         </div>
+        <Toaster richColors closeButton position="bottom-right" />
       </body>
     </html>
   );

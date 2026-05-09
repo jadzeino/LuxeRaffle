@@ -3,6 +3,7 @@
 import { useId, useOptimistic, useState, useTransition } from 'react';
 import { ShoppingBag } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { addToCart } from '@/app/actions/cart';
 import { Button } from '@/components/ui/button';
 
@@ -52,10 +53,16 @@ export function AddToCartButton({
             try {
               await addToCart(raffleId);
               setAnnouncement(`${raffleName} ticket added to cart.`);
+              toast.success('Added to cart', {
+                description: `${raffleName} ticket added.`,
+              });
               router.refresh();
             } catch {
               setError('We could not update your cart. Please try again.');
               setAnnouncement(`Could not add ${raffleName} ticket to cart.`);
+              toast.error('Could not add to cart', {
+                description: 'Please try again.',
+              });
             }
           });
         }}
