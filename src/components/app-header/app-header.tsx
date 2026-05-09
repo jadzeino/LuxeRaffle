@@ -4,24 +4,20 @@ import { UserIcon } from '../user-icon/user-icon';
 import { getCurrentUser } from '@/lib/auth/session';
 import { getCartCount, getCartItems } from '@/lib/cart/cookies';
 import { ThemeToggle } from '@/components/theme/theme-toggle';
-import { cookies } from 'next/headers';
-import { isTheme, THEME_COOKIE } from '@/lib/theme';
+import type { Theme } from '@/lib/theme';
 
 const CartCounter = ({ items }: { items: number }) => (
-  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+  <span
+    key={items}
+    className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-semibold text-white animate-[badge-bounce-in_0.3s_ease-out_both] motion-reduce:animate-none"
+  >
     {items}
   </span>
 );
 
-export const AppHeader = async () => {
-  const [user, cartItems, cookieStore] = await Promise.all([
-    getCurrentUser(),
-    getCartItems(),
-    cookies(),
-  ]);
+export const AppHeader = async ({ theme }: { theme: Theme }) => {
+  const [user, cartItems] = await Promise.all([getCurrentUser(), getCartItems()]);
   const amountOfCartItems = getCartCount(cartItems);
-  const themeCookie = cookieStore.get(THEME_COOKIE)?.value;
-  const theme = isTheme(themeCookie) ? themeCookie : 'light';
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/80 bg-background/95 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/80">

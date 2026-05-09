@@ -55,7 +55,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="grid min-h-dvh grid-rows-[auto_1fr_auto]">
-          <AppHeader />
+          <AppHeader theme={theme} />
           {children}
           <AppFooter />
         </div>
