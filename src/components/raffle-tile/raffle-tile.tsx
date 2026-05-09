@@ -1,0 +1,91 @@
+import type { Raffle } from '@/lib/schemas/raffle';
+import Image from 'next/image';
+import { Eye } from 'lucide-react';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { AddToCartButton } from '@/components/raffle/add-to-cart-button';
+import { formatCurrency, formatNumber } from '@/lib/utils/money';
+
+export default function RaffleTile({ raffle }: { raffle: Raffle }) {
+  const soldPercentage = Math.round(
+    ((raffle.totalTickets - raffle.availableTickets) / raffle.totalTickets) * 100,
+  );
+  const remainingPercentage = raffle.availableTickets / raffle.totalTickets;
+  const isAlmostSoldOut = remainingPercentage <= 0.1;
+  const progressColor = isAlmostSoldOut ? 'bg-red-600' : 'bg-emerald-600';
+  const statusLabel = isAlmostSoldOut
+    ? 'Almost sold out'
+    : `${formatNumber(raffle.availableTickets)} left`;
+
+  return (
+    <article className="flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+      <div className="relative aspect-[16/11] overflow-hidden bg-muted">
+        <Image
+          src={raffle.image}
+          alt={raffle.name}
+          fill
+          sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 100vw"
+          className="object-cover object-center transition duration-500 hover:scale-[1.03]"
+        />
+        <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-4 pt-20">
+          <Badge
+            className={
+              isAlmostSoldOut
+                ? 'border-red-700 bg-red-600 text-white shadow-sm transition-colors hover:bg-red-700'
+                : 'border-slate-300 bg-slate-50 text-slate-950 shadow-sm transition-colors hover:bg-white'
+            }
+          >
+            {statusLabel}
+          </Badge>
+          <p className="shrink-0 text-xl font-bold text-white drop-shadow-sm sm:text-2xl">
+            {formatCurrency(raffle.ticketPrice)}
+          </p>
+        </div>
+      </div>
+      <div className="flex flex-1 flex-col space-y-4 p-5">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            {formatCurrency(raffle.carPrice)} prize
+          </p>
+          <h2 className="mt-2 text-2xl font-bold leading-tight text-foreground">
+            {raffle.name}
+          </h2>
+          <p className="mt-3 text-base leading-7 text-muted-foreground">
+            {raffle.description}
+          </p>
+        </div>
+        <div aria-label={`${raffle.availableTickets} tickets remaining`}>
+          <div className="mb-2 flex items-center justify-between text-sm text-muted-foreground">
+            <span>Tickets sold</span>
+            <span>{formatNumber(raffle.availableTickets)} left</span>
+          </div>
+          <div
+            className="h-3 rounded-full bg-muted"
+            role="progressbar"
+            aria-label={`${raffle.name} tickets sold`}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={soldPercentage}
+            aria-valuetext={`${soldPercentage}% sold, ${formatNumber(
+              raffle.availableTickets,
+            )} tickets left`}
+          >
+            <div
+              className={`h-3 rounded-full ${progressColor} transition-[width] duration-700 ease-out`}
+              style={{ width: `${soldPercentage}%` }}
+            />
+          </div>
+        </div>
+        <div className="mt-auto grid grid-cols-2 gap-3 pt-2">
+          <AddToCartButton raffleId={raffle.id} raffleName={raffle.name} />
+          <Button className="h-11 bg-slate-950 text-white hover:bg-slate-800 dark:bg-primary dark:text-primary-foreground" asChild>
+            <a href={`#raffle-${raffle.id}`} aria-label={`View details for ${raffle.name}`}>
+              <Eye aria-hidden="true" />
+              Details
+            </a>
+          </Button>
+        </div>
+      </div>
+    </article>
+  );
+}
