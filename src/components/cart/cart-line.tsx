@@ -12,59 +12,63 @@ export function CartLine({ line }: { line: CartLineData }) {
   return (
     <li
       className={[
-        'overflow-hidden rounded-lg border border-border bg-card shadow-sm md:grid md:grid-cols-[220px_1fr]',
+        'overflow-hidden rounded-xl border border-border bg-card shadow-sm',
+        'md:grid md:grid-cols-[240px_1fr]',
         'transition-all duration-300',
         leaving ? 'opacity-0 -translate-x-4 pointer-events-none' : 'opacity-100 translate-x-0',
       ].join(' ')}
       aria-hidden={leaving}
     >
-      <div className="relative aspect-[16/10] min-h-48 bg-muted md:h-full">
+      {/* Image — overflow-hidden + md:aspect-auto prevents aspect-ratio from
+          expanding the column width beyond the 240px grid track at md+ */}
+      <div className="relative aspect-[4/3] overflow-hidden bg-muted md:aspect-auto md:h-full">
         <Image
           src={line.raffle.image}
           alt={line.raffle.name}
           fill
-          sizes="(min-width: 768px) 220px, 100vw"
+          sizes="(min-width: 768px) 240px, 100vw"
           className="object-cover"
         />
-        <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-gradient-to-t from-black/75 to-transparent p-4 pt-16 text-white">
-          <span className="rounded-md bg-white/95 px-3 py-1 text-sm font-semibold text-slate-950">
-            {formatCurrency(line.raffle.ticketPrice)} each
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-3 pt-10">
+          <span className="inline-block rounded bg-white/95 px-2 py-0.5 text-xs font-semibold text-slate-950">
+            {formatCurrency(line.raffle.ticketPrice)} / ticket
           </span>
-          <span className="text-lg font-bold">{formatCurrency(line.lineTotal)}</span>
         </div>
       </div>
 
-      <div className="grid gap-5 p-5 lg:grid-cols-[1fr_auto]">
-        <div>
-          <h2 className="text-2xl font-bold leading-tight">{line.raffle.name}</h2>
-          <p className="mt-2 text-base leading-7 text-muted-foreground">{line.raffle.description}</p>
-          <p className="mt-4 text-sm text-muted-foreground">
-            You selected <strong>{line.quantity}</strong> tickets. Availability changes only after
-            purchase; <strong>{line.raffle.availableTickets}</strong> tickets are currently left.
+      {/* Content — min-w-0 on every grid item prevents text from overflowing
+          the 1fr column when headings are long */}
+      <div className="flex min-w-0 flex-col gap-4 p-5 sm:p-6">
+        <div className="min-w-0 flex-1">
+          <h2 className="truncate text-xl font-bold leading-tight">{line.raffle.name}</h2>
+          <p className="mt-1.5 line-clamp-2 text-sm leading-6 text-muted-foreground">
+            {line.raffle.description}
+          </p>
+          <p className="mt-3 text-sm text-muted-foreground">
+            <strong className="text-foreground">{line.raffle.availableTickets.toLocaleString()}</strong>{' '}
+            tickets currently available.
           </p>
           {line.exceedsAvailability ? (
             <p
               className="mt-3 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm font-medium text-destructive"
               role="alert"
             >
-              This selection exceeds current availability.
+              Selection exceeds current availability.
             </p>
           ) : null}
         </div>
 
-        <div className="flex items-end justify-between gap-4 lg:flex-col lg:items-end">
+        <div className="flex items-center justify-between gap-4 border-t border-border pt-4">
           <CartControls
             raffleId={line.id}
             quantity={line.quantity}
             label={line.raffle.name}
             onBeforeRemove={() => setLeaving(true)}
           />
-          <p className="text-right text-sm text-muted-foreground">
-            Line total
-            <span className="block text-xl font-bold text-foreground">
-              {formatCurrency(line.lineTotal)}
-            </span>
-          </p>
+          <div className="text-right">
+            <p className="text-xs text-muted-foreground">Line total</p>
+            <p className="text-xl font-bold">{formatCurrency(line.lineTotal)}</p>
+          </div>
         </div>
       </div>
     </li>
