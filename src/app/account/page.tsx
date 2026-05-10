@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { Receipt, Ticket } from 'lucide-react';
+import { AlertTriangle, Receipt, Ticket } from 'lucide-react';
 import { LogoutButton } from '@/components/auth/logout-button';
 import { Button } from '@/components/ui/button';
 import { getOrders } from '@/lib/api/orders';
@@ -23,10 +23,16 @@ export const dynamic = 'force-dynamic';
 export default async function AccountPage() {
   const user = await requireUser();
   const token = await getAuthToken();
-  const [orders, raffles] = await Promise.all([
-    token ? getOrders(token).catch(() => []) : [],
+
+  // allSettled so a flaky raffles API never crashes the account page.
+  const [ordersResult, rafflesResult] = await Promise.allSettled([
+    token ? getOrders(token) : Promise.resolve([]),
     getRaffles(),
   ]);
+
+  const orders = ordersResult.status === 'fulfilled' ? ordersResult.value : [];
+  const raffles = rafflesResult.status === 'fulfilled' ? rafflesResult.value : [];
+  const rafflesFailed = rafflesResult.status === 'rejected';
 
   const summaries = orders.map((order) => ({
     order,
@@ -50,8 +56,16 @@ export default async function AccountPage() {
         <LogoutButton />
       </section>
 
+      {/* Degraded-mode banner — shown when raffles API is down */}
+      {rafflesFailed && orders.length > 0 && (
+        <div className="mt-8 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800/40 dark:bg-amber-900/20 dark:text-amber-300">
+          <AlertTriangle aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0" />
+          <p>Raffle details are temporarily unavailable. Order IDs and ticket counts are still shown below.</p>
+        </div>
+      )}
+
       {/* Stats strip */}
-      {orders.length > 0 && (
+      {orders.length > 0 && !rafflesFailed && (
         <div className="mt-8 grid grid-cols-3 divide-x divide-border rounded-xl border border-border bg-card shadow-sm">
           <div className="px-5 py-4 text-center">
             <p className="text-2xl font-bold tabular-nums">{orders.length}</p>
@@ -123,24 +137,30 @@ export default async function AccountPage() {
                 </div>
 
                 {/* Line items */}
-                <ul className="divide-y divide-border">
-                  {summary.lines.map((line) => (
-                    <li
-                      key={line.id}
-                      className="flex items-center justify-between gap-4 px-5 py-3.5"
-                    >
-                      <span className="text-sm font-medium">{line.raffle.name}</span>
-                      <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                        <span className="tabular-nums">
-                          {line.quantity} × {formatCurrency(line.raffle.ticketPrice)}
-                        </span>
-                        <span className="font-medium text-foreground tabular-nums">
-                          {formatCurrency(line.lineTotal)}
-                        </span>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                {summary.lines.length > 0 ? (
+                  <ul className="divide-y divide-border">
+                    {summary.lines.map((line) => (
+                      <li
+                        key={line.id}
+                        className="flex items-center justify-between gap-4 px-5 py-3.5"
+                      >
+                        <span className="text-sm font-medium">{line.raffle.name}</span>
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                          <span className="tabular-nums">
+                            {line.quantity} × {formatCurrency(line.raffle.ticketPrice)}
+                          </span>
+                          <span className="font-medium text-foreground tabular-nums">
+                            {formatCurrency(line.lineTotal)}
+                          </span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="px-5 py-4 text-sm text-muted-foreground">
+                    {order.items.length} ticket {order.items.length === 1 ? 'entry' : 'entries'} — details unavailable.
+                  </p>
+                )}
               </li>
             ))}
           </ul>
