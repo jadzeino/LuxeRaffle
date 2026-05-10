@@ -56,19 +56,19 @@ export default function RaffleTile({ raffle, index = 0 }: { raffle: Raffle; inde
           </p>
         </div>
       </div>
-      <div className="flex flex-1 flex-col space-y-4 p-5">
-        <div>
+      <div className="flex flex-1 flex-col p-5">
+        <div className="flex-1">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             {formatCurrency(raffle.carPrice)} prize
           </p>
           <h3 className="mt-2 text-2xl font-bold leading-tight text-foreground">
             {raffle.name}
           </h3>
-          <p className="mt-3 text-base leading-7 text-muted-foreground">
+          <p className="mt-3 line-clamp-3 text-base leading-7 text-muted-foreground">
             {raffle.description}
           </p>
         </div>
-        <div aria-label={`${raffle.availableTickets} tickets remaining`}>
+        <div className="mt-5" aria-label={`${raffle.availableTickets} tickets remaining`}>
           <div className="mb-2 flex items-center justify-between text-sm text-muted-foreground">
             <span>Tickets sold</span>
             <span>{formatNumber(raffle.availableTickets)} left</span>
@@ -90,7 +90,7 @@ export default function RaffleTile({ raffle, index = 0 }: { raffle: Raffle; inde
             />
           </div>
         </div>
-        <div className="mt-auto grid grid-cols-2 gap-3 pt-2">
+        <div className="mt-4 grid grid-cols-2 gap-3">
           <AddToCartButton raffleId={raffle.id} raffleName={raffle.name} disabled={isSoldOut} />
           <Button
             className="h-11 bg-slate-950 text-white hover:bg-slate-800 dark:bg-primary dark:text-primary-foreground"
