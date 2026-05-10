@@ -1,5 +1,6 @@
 import type { Raffle } from '@/lib/schemas/raffle';
 import RaffleTile from '../raffle-tile/raffle-tile';
+import { RaffleCardTilt } from '@/components/raffle/raffle-card-tilt';
 
 export default function RafflesGrid({ raffles }: { raffles: Raffle[] }) {
   if (raffles.length === 0) {
@@ -34,7 +35,9 @@ export default function RafflesGrid({ raffles }: { raffles: Raffle[] }) {
       </div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {raffles.map((raffle, index) => (
-          <RaffleTile key={raffle.id} raffle={raffle} index={index} />
+          <RaffleCardTilt key={raffle.id}>
+            <RaffleTile raffle={raffle} index={index} />
+          </RaffleCardTilt>
         ))}
       </div>
     </section>
