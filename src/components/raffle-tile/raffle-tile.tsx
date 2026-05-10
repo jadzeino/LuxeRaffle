@@ -36,11 +36,19 @@ export default function RaffleTile({ raffle, index = 0 }: { raffle: Raffle; inde
         <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-4 pt-20">
           <Badge
             className={
-              isAlmostSoldOut
-                ? 'border-red-700 bg-red-600 text-white shadow-sm transition-colors hover:bg-red-700'
-                : 'border-slate-300 bg-slate-50 text-slate-950 shadow-sm transition-colors hover:bg-white'
+              isSoldOut
+                ? 'border-slate-600 bg-slate-700 text-white shadow-sm'
+                : isAlmostSoldOut
+                  ? 'border-red-700 bg-red-600 text-white shadow-sm transition-colors hover:bg-red-700'
+                  : 'border-slate-300 bg-slate-50 text-slate-950 shadow-sm transition-colors hover:bg-white'
             }
           >
+            {isAlmostSoldOut && (
+              <span
+                aria-hidden="true"
+                className="mr-1.5 inline-block h-2 w-2 rounded-full bg-white animate-pulse motion-reduce:animate-none"
+              />
+            )}
             {statusLabel}
           </Badge>
           <p className="shrink-0 text-xl font-bold text-white drop-shadow-sm sm:text-2xl">
