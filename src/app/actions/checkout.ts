@@ -6,6 +6,7 @@ import { getAuthToken } from '@/lib/auth/session';
 import { clearCart, getCartItems } from '@/lib/cart/cookies';
 import { createOrder } from '@/lib/api/orders';
 import { getFreshRaffles } from '@/lib/api/raffles';
+import { ORDERS_CACHE_TAG } from '@/lib/constants';
 
 export type CheckoutState = {
   error?: string;
@@ -45,6 +46,7 @@ export async function checkoutAction(
     await createOrder(token, items);
     await clearCart();
     revalidateTag('raffles');
+    revalidateTag(ORDERS_CACHE_TAG);
     revalidatePath('/');
     revalidatePath('/cart');
     revalidatePath('/account');

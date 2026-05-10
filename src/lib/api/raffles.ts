@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { fetchJson } from '@/lib/api/client';
+import { fetchJson, fetchJsonWithRetry } from '@/lib/api/client';
 import {
   rafflesSchema,
   type Raffle,
@@ -12,14 +12,14 @@ export type RafflePageParams = {
 };
 
 export const getRaffles = cache(async (): Promise<Raffle[]> => {
-  return fetchJson('/api/raffles', rafflesSchema, {
+  return fetchJsonWithRetry('/api/raffles', rafflesSchema, {
     next: { revalidate: 60, tags: ['raffles'] },
     timeoutMs: 6500,
   });
 });
 
 export async function getFreshRaffles(): Promise<Raffle[]> {
-  return fetchJson('/api/raffles', rafflesSchema, {
+  return fetchJsonWithRetry('/api/raffles', rafflesSchema, {
     cache: 'no-store',
     timeoutMs: 6500,
   });
