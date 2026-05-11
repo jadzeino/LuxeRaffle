@@ -42,3 +42,4 @@ next-env.d.ts
 
 # project plan (local dev only)
 plan.md
+data/db.json
