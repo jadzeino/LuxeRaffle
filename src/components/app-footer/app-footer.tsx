@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 export const AppFooter = () => {
   return (
     <footer className="mt-auto border-t border-border bg-background">
@@ -17,35 +15,10 @@ export const AppFooter = () => {
           <div>
             <h2 className="mb-3 text-sm font-semibold">Quick Links</h2>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link
-                  href="/terms"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  Terms & Conditions
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/privacy"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="text-muted-foreground hover:text-foreground">
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  Contact Us
-                </Link>
-              </li>
+              <li><span className="text-muted-foreground">Terms &amp; Conditions</span></li>
+              <li><span className="text-muted-foreground">Privacy Policy</span></li>
+              <li><span className="text-muted-foreground">FAQ</span></li>
+              <li><span className="text-muted-foreground">Contact Us</span></li>
             </ul>
           </div>
           <div>
