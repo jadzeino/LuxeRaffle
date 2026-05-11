@@ -92,7 +92,7 @@ export default function Home() {
             <p className="text-sm font-semibold uppercase tracking-[0.35em] text-white/75">
               Verified luxury raffles
             </p>
-            <h1 className="mt-5 text-5xl font-semibold leading-tight sm:text-6xl lg:text-7xl">
+            <h1 className="mt-5 text-5xl font-semibold leading-tight text-white sm:text-6xl lg:text-7xl">
               LuxeRaffle
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-8 text-white/80">
@@ -100,7 +100,7 @@ export default function Home() {
               transparent availability, and server-rendered performance from
               the first page load.
             </p>
-            <Button asChild size="lg" className="mt-8 bg-background text-foreground hover:bg-background/90">
+            <Button asChild size="lg" className="mt-8 bg-white text-slate-950 shadow-md transition-all duration-200 hover:bg-white/90 hover:shadow-xl hover:scale-[1.02]">
               <a href="#raffles">View live raffles</a>
             </Button>
           </div>
