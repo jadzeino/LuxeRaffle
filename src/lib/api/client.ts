@@ -56,6 +56,32 @@ export async function fetchJson<TSchema extends z.ZodTypeAny>(
 
 export const fetchJsonMemoized = cache(fetchJson);
 
+/**
+ * Generic retry wrapper for direct (non-HTTP) async calls.
+ * Mirrors the same back-off and bail-out rules as fetchJsonWithRetry.
+ */
+export async function withRetry<T>(
+  fn: () => Promise<T>,
+  maxRetries = 2,
+): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    if (attempt > 0) {
+      await new Promise<void>((r) =>
+        setTimeout(r, RETRY_DELAYS_MS[attempt - 1] ?? 800),
+      );
+    }
+    try {
+      return await fn();
+    } catch (error) {
+      if (error instanceof ApiError && error.status !== undefined && error.status < 500) throw error;
+      if (error instanceof ValidationError) throw error;
+      lastError = error;
+    }
+  }
+  throw lastError;
+}
+
 // Delays before attempt 1 and attempt 2 (attempt 0 fires immediately).
 const RETRY_DELAYS_MS = [300, 800] as const;
 

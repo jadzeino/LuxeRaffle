@@ -1,36 +1,38 @@
 import { cache } from 'react';
-import { fetchJsonWithRetry } from '@/lib/api/client';
+import { withRetry } from '@/lib/api/client';
+import { getRafflesData } from '@/lib/api/mock-service';
 import {
   rafflesSchema,
   type Raffle,
   type RafflePage,
 } from '@/lib/schemas/raffle';
+import { ValidationError } from './errors';
 
 export type RafflePageParams = {
   cursor?: string | null;
   limit?: number;
 };
 
+function parseRaffles(data: unknown): Raffle[] {
+  const parsed = rafflesSchema.safeParse(data);
+  if (!parsed.success) throw new ValidationError();
+  return parsed.data;
+}
+
 export const getRaffles = cache(async (): Promise<Raffle[]> => {
-  return fetchJsonWithRetry('/api/raffles', rafflesSchema, {
-    next: { revalidate: 60, tags: ['raffles'] },
-    timeoutMs: 6500,
-  });
+  const data = await withRetry(() => getRafflesData());
+  return parseRaffles(data);
 });
 
 export async function getFreshRaffles(): Promise<Raffle[]> {
-  return fetchJsonWithRetry('/api/raffles', rafflesSchema, {
-    cache: 'no-store',
-    timeoutMs: 6500,
-  });
+  const data = await withRetry(() => getRafflesData());
+  return parseRaffles(data);
 }
 
 export const getRafflesPage = cache(
   async ({ cursor = null, limit = 24 }: RafflePageParams = {}): Promise<RafflePage> => {
     const raffles = await getRaffles();
 
-    // The challenge API returns all raffles. This adapter keeps today's UI honest
-    // while exposing the cursor-based contract a production API should provide.
     const startIndex = cursor ? Number.parseInt(cursor, 10) : 0;
     const safeStartIndex = Number.isFinite(startIndex) && startIndex > 0 ? startIndex : 0;
     const safeLimit = Math.min(Math.max(limit, 1), 48);
