@@ -18,5 +18,7 @@ test('login, add ticket, checkout, and view account orders', async ({ page }) =>
   await expect(page).toHaveURL(/\/checkout/);
   await page.getByRole('button', { name: /complete purchase/i }).click();
   await expect(page).toHaveURL(/\/account/);
-  await expect(page.getByRole('heading', { name: /order history/i })).toBeVisible();
+  // OrdersSection streams in after getOrders + getRaffles resolve. The mock
+  // API adds 1–4 s of random delay per request, so give Suspense time to settle.
+  await expect(page.getByRole('heading', { name: /order history/i })).toBeVisible({ timeout: 15_000 });
 });
