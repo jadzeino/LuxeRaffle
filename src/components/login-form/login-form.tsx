@@ -33,7 +33,10 @@ export function LoginForm({
                   type="email"
                   autoComplete="email"
                   placeholder="jane.doe@gmail.com"
+                  defaultValue={state.email}
                   aria-describedby={state.error ? 'login-error' : undefined}
+                  aria-invalid={!!state.error}
+                  className={cn(state.error && 'border-destructive focus-visible:ring-destructive')}
                   required
                 />
               </div>
@@ -45,6 +48,8 @@ export function LoginForm({
                   type="password"
                   autoComplete="current-password"
                   aria-describedby={state.error ? 'login-error' : undefined}
+                  aria-invalid={!!state.error}
+                  className={cn(state.error && 'border-destructive focus-visible:ring-destructive')}
                   required
                 />
               </div>

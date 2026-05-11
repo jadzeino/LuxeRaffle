@@ -7,6 +7,7 @@ import { loginInputSchema } from '@/lib/schemas/auth';
 
 export type LoginState = {
   error?: string;
+  email?: string;
 };
 
 export async function loginAction(
@@ -18,8 +19,10 @@ export async function loginAction(
     password: formData.get('password'),
   });
 
+  const email = String(formData.get('email') ?? '');
+
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? 'Check your login details.' };
+    return { error: parsed.error.issues[0]?.message ?? 'Check your login details.', email };
   }
 
   try {
@@ -29,7 +32,7 @@ export async function loginAction(
     );
     await setAuthToken(token);
   } catch {
-    return { error: 'Invalid email or password.' };
+    return { error: 'Invalid email or password.', email };
   }
 
   const next = String(formData.get('next') ?? '/account');
