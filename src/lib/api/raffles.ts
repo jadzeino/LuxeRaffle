@@ -1,32 +1,28 @@
 import { cache } from 'react';
-import { withRetry } from '@/lib/api/client';
-import { getRafflesData } from '@/lib/api/mock-service';
+import { fetchJsonWithRetry } from '@/lib/api/client';
 import {
   rafflesSchema,
   type Raffle,
   type RafflePage,
 } from '@/lib/schemas/raffle';
-import { ValidationError } from './errors';
 
 export type RafflePageParams = {
   cursor?: string | null;
   limit?: number;
 };
 
-function parseRaffles(data: unknown): Raffle[] {
-  const parsed = rafflesSchema.safeParse(data);
-  if (!parsed.success) throw new ValidationError();
-  return parsed.data;
-}
-
 export const getRaffles = cache(async (): Promise<Raffle[]> => {
-  const data = await withRetry(() => getRafflesData());
-  return parseRaffles(data);
+  return fetchJsonWithRetry('/api/raffles', rafflesSchema, {
+    next: { revalidate: 60, tags: ['raffles'] },
+    timeoutMs: 12_000,
+  });
 });
 
 export async function getFreshRaffles(): Promise<Raffle[]> {
-  const data = await withRetry(() => getRafflesData());
-  return parseRaffles(data);
+  return fetchJsonWithRetry('/api/raffles', rafflesSchema, {
+    cache: 'no-store',
+    timeoutMs: 12_000,
+  });
 }
 
 export const getRafflesPage = cache(

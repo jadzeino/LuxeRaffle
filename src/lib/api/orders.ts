@@ -1,22 +1,25 @@
-import { withRetry } from '@/lib/api/client';
-import { getOrdersData, createOrderData } from '@/lib/api/mock-service';
+import { fetchJson, fetchJsonWithRetry } from '@/lib/api/client';
 import {
   createOrderResponseSchema,
   ordersSchema,
   type OrderItem,
 } from '@/lib/schemas/order';
-import { ValidationError } from './errors';
+import { ORDERS_CACHE_TAG } from '@/lib/constants';
 
 export async function getOrders(token: string) {
-  const data = await withRetry(() => getOrdersData(token));
-  const parsed = ordersSchema.safeParse(data);
-  if (!parsed.success) throw new ValidationError();
-  return parsed.data;
+  return fetchJsonWithRetry('/api/orders', ordersSchema, {
+    next: { revalidate: 3600, tags: [ORDERS_CACHE_TAG] },
+    headers: { Authorization: `Bearer ${token}` },
+    timeoutMs: 12_000,
+  });
 }
 
 export async function createOrder(token: string, items: OrderItem[]) {
-  const data = await createOrderData(token, items);
-  const parsed = createOrderResponseSchema.safeParse(data);
-  if (!parsed.success) throw new ValidationError();
-  return parsed.data;
+  return fetchJson('/api/orders', createOrderResponseSchema, {
+    method: 'POST',
+    cache: 'no-store',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ items }),
+    timeoutMs: 12_000,
+  });
 }
