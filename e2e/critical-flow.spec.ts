@@ -1,6 +1,11 @@
 import { expect, test } from '@playwright/test';
 import { gotoHomeWithRaffles } from './helpers';
 
+// This test chains homepage → add → cart → login → checkout → account.
+// Each step can hit the slow mock API (1–4 s random + 10% timeout/retry).
+// Worst case per API call ≈ 13 s; with multiple calls budget 90 s total.
+test.setTimeout(90_000);
+
 test('login, add ticket, checkout, and view account orders', async ({ page }) => {
   await gotoHomeWithRaffles(page);
   await page.getByRole('button', { name: /add .* ticket to cart/i }).first().click();
@@ -17,7 +22,9 @@ test('login, add ticket, checkout, and view account orders', async ({ page }) =>
 
   await expect(page).toHaveURL(/\/checkout/);
   await page.getByRole('button', { name: /complete purchase/i }).click();
-  await expect(page).toHaveURL(/\/account/);
+  // checkoutAction calls getFreshRaffles() + createOrder() — two mock API
+  // calls each taking 1–4 s. Give the redirect enough room to happen.
+  await expect(page).toHaveURL(/\/account/, { timeout: 15_000 });
   // OrdersSection streams in after getOrders + getRaffles resolve. The mock
   // API adds 1–4 s of random delay per request, so give Suspense time to settle.
   await expect(page.getByRole('heading', { name: /order history/i })).toBeVisible({ timeout: 15_000 });

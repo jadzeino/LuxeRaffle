@@ -70,9 +70,11 @@ test('"in cart (N)" button state persists after router refresh', async ({ page }
 
   // After router.refresh() the server re-sends quantityInCart=1 and the
   // button aria-label switches to "<name> — 1 in cart, click to add more".
+  // After router.refresh(), the server re-renders RafflesSection which calls
+  // getRaffles() again — allow up to 15 s for the mock API to respond.
   await expect(
     page.getByRole('button', { name: /1 in cart, click to add more/i }).first(),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 15_000 });
 });
 
 test('cart badge updates immediately after adding a second ticket', async ({ page }) => {
