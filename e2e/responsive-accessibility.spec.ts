@@ -29,9 +29,14 @@ test('raffle card primary actions can be operated from the keyboard', async ({
   await addButton.focus();
   await expect(addButton).toBeFocused();
   await page.keyboard.press('Enter');
-  await expect(addButton).toContainText(/add more/i);
 
-  const detailsLink = page.getByRole('link', { name: /view details for/i }).first();
+  // After the server action + router.refresh(), the button aria-label switches
+  // to "<name> — 1 in cart, click to add more".
+  await expect(
+    page.getByRole('button', { name: /1 in cart, click to add more/i }).first(),
+  ).toBeVisible();
+
+  const detailsLink = page.getByRole('link', { name: /view all raffles/i }).first();
   await detailsLink.focus();
   await expect(detailsLink).toBeFocused();
 });
