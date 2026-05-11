@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { AlertTriangle, Receipt, Ticket } from 'lucide-react';
@@ -20,11 +21,9 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default async function AccountPage() {
-  const user = await requireUser();
-  const token = await getAuthToken();
-
-  // allSettled so a flaky raffles API never crashes the account page.
+// Async RSC — all slow API calls (getOrders + getRaffles) live here so
+// the page shell (user header + logout) can stream out immediately.
+async function OrdersSection({ token }: { token: string | null }) {
   const [ordersResult, rafflesResult] = await Promise.allSettled([
     token ? getOrders(token) : Promise.resolve([]),
     getRaffles(),
@@ -43,20 +42,8 @@ export default async function AccountPage() {
   const totalTickets = summaries.reduce((acc, { summary }) => acc + summary.itemCount, 0);
 
   return (
-    <main id="main-content" className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
-      {/* Header */}
-      <section className="flex flex-col justify-between gap-4 border-b border-border pb-8 md:flex-row md:items-end">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground">
-            Account
-          </p>
-          <h1 className="mt-2 text-3xl font-bold">{user.firstName}</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{user.email}</p>
-        </div>
-        <LogoutButton />
-      </section>
-
-      {/* Degraded-mode banner — shown when raffles API is down */}
+    <>
+      {/* Degraded-mode banner */}
       {rafflesFailed && orders.length > 0 && (
         <div className="mt-8 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-800/40 dark:bg-amber-900/20 dark:text-amber-300">
           <AlertTriangle aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0" />
@@ -69,19 +56,19 @@ export default async function AccountPage() {
         <div className="mt-8 grid grid-cols-3 divide-x divide-border rounded-xl border border-border bg-card shadow-sm">
           <div className="px-5 py-4 text-center">
             <p className="text-2xl font-bold tabular-nums">{orders.length}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground uppercase tracking-wide">
+            <p className="mt-0.5 text-xs uppercase tracking-wide text-muted-foreground">
               {orders.length === 1 ? 'Order' : 'Orders'}
             </p>
           </div>
           <div className="px-5 py-4 text-center">
             <p className="text-2xl font-bold tabular-nums">{totalTickets}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground uppercase tracking-wide">
+            <p className="mt-0.5 text-xs uppercase tracking-wide text-muted-foreground">
               {totalTickets === 1 ? 'Ticket' : 'Tickets'}
             </p>
           </div>
           <div className="px-5 py-4 text-center">
             <p className="text-2xl font-bold tabular-nums">{formatCurrency(totalSpent)}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground uppercase tracking-wide">Total spent</p>
+            <p className="mt-0.5 text-xs uppercase tracking-wide text-muted-foreground">Total spent</p>
           </div>
         </div>
       )}
@@ -115,7 +102,7 @@ export default async function AccountPage() {
                 {/* Order header */}
                 <div className="flex flex-col justify-between gap-3 border-b border-border bg-muted/40 px-5 py-4 sm:flex-row sm:items-center">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-card border border-border shadow-sm">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-card shadow-sm">
                       <Receipt aria-hidden="true" className="h-4 w-4 text-muted-foreground" />
                     </div>
                     <div>
@@ -166,6 +153,43 @@ export default async function AccountPage() {
           </ul>
         )}
       </section>
+    </>
+  );
+}
+
+function OrdersSkeleton() {
+  return (
+    <div className="mt-10 space-y-4" aria-busy="true">
+      <div className="h-5 w-36 animate-pulse rounded bg-muted" />
+      <div className="h-32 animate-pulse rounded-xl bg-muted" />
+      <div className="h-32 animate-pulse rounded-xl bg-muted" />
+    </div>
+  );
+}
+
+export default async function AccountPage() {
+  // Both reads are cookie-based — no network, resolves in microseconds.
+  const user = await requireUser();
+  const token = await getAuthToken();
+
+  return (
+    <main id="main-content" className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+      {/* Renders immediately from cookie reads */}
+      <section className="flex flex-col justify-between gap-4 border-b border-border pb-8 md:flex-row md:items-end">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground">
+            Account
+          </p>
+          <h1 className="mt-2 text-3xl font-bold">{user.firstName}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{user.email}</p>
+        </div>
+        <LogoutButton />
+      </section>
+
+      {/* Stats + orders stream in while page shell is already visible */}
+      <Suspense fallback={<OrdersSkeleton />}>
+        <OrdersSection token={token} />
+      </Suspense>
     </main>
   );
 }
