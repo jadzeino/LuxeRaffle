@@ -38,7 +38,10 @@ export function CartControls({
       >
         <Minus aria-hidden="true" />
       </Button>
-      <span className="flex h-9 min-w-10 items-center justify-center rounded-md border border-border bg-background px-3 text-sm font-semibold">
+      <span
+        className="flex h-9 min-w-10 items-center justify-center rounded-md border border-border bg-background px-3 text-sm font-semibold"
+        aria-label="Item quantity"
+      >
         {optimisticQuantity}
       </span>
       <Button

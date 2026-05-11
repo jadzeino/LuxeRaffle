@@ -25,7 +25,7 @@ test('increase and decrease quantity via cart controls', async ({ page }) => {
 
   const increaseBtn = page.getByRole('button', { name: /increase quantity/i }).first();
   const decreaseBtn = page.getByRole('button', { name: /decrease quantity/i }).first();
-  const quantityDisplay = page.locator('span').filter({ hasText: /^\d+$/ }).first();
+  const quantityDisplay = page.getByLabel('Item quantity').first();
 
   await expect(quantityDisplay).toHaveText('1');
 
