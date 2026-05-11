@@ -1,6 +1,6 @@
 # LuxeRaffle
 
-A staff-level implementation of a luxury car raffle platform — server-first, fully accessible, production-minded.
+A Nextjs implementation of a luxury car raffle platform — server-first, fully accessible, production-minded.
 
 > **Full write-up** → [SOLUTION.md](./SOLUTION.md)  
 > **Original challenge brief** → [challange.md](./challange.md)
