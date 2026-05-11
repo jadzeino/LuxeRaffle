@@ -1,20 +1,35 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Image from 'next/image';
 import { CartControls } from './cart-controls';
 import { formatCurrency } from '@/lib/utils/money';
 import type { CartLine as CartLineData } from '@/lib/cart/summary';
 
 export function CartLine({ line }: { line: CartLineData }) {
+  const liRef = useRef<HTMLLIElement>(null);
   const [leaving, setLeaving] = useState(false);
+  const [height, setHeight] = useState<number | null>(null);
+
+  const handleBeforeRemove = () => {
+    if (liRef.current) setHeight(liRef.current.offsetHeight);
+    setLeaving(true);
+    // Collapse height after the fade completes so remaining items slide up immediately
+    setTimeout(() => setHeight(0), 310);
+  };
 
   return (
     <li
+      ref={liRef}
+      style={
+        height !== null
+          ? { height, overflow: 'hidden', transition: 'height 0.25s ease-out' }
+          : undefined
+      }
       className={[
-        'overflow-hidden rounded-xl border border-border bg-card shadow-sm',
+        'rounded-xl border border-border bg-card shadow-sm',
         'md:grid md:grid-cols-[240px_1fr]',
-        'transition-all duration-300',
+        'transition-[opacity,transform] duration-300',
         leaving ? 'opacity-0 -translate-x-4 pointer-events-none' : 'opacity-100 translate-x-0',
       ].join(' ')}
       aria-hidden={leaving}
@@ -63,7 +78,7 @@ export function CartLine({ line }: { line: CartLineData }) {
             raffleId={line.id}
             quantity={line.quantity}
             label={line.raffle.name}
-            onBeforeRemove={() => setLeaving(true)}
+            onBeforeRemove={handleBeforeRemove}
           />
           <div className="text-right">
             <p className="text-xs text-muted-foreground">Line total</p>
