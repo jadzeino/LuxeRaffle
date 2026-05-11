@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import RafflesGrid from '@/components/raffles-grid/raffles-grid';
 import { getRaffles } from '@/lib/api/raffles';
+import { getCartItems } from '@/lib/cart/cookies';
 import { Button } from '@/components/ui/button';
 import { JsonLd } from '@/components/seo/json-ld';
 import { buildHomeJsonLd } from '@/lib/seo/home-json-ld';
@@ -11,12 +12,14 @@ export const revalidate = 60;
 
 async function RafflesSection() {
   try {
-    const raffles = await getRaffles();
+    // Both are React cache()-memoised — getCartItems reads a cookie (no network).
+    const [raffles, cartItems] = await Promise.all([getRaffles(), getCartItems()]);
+    const cartMap = new Map(cartItems.map((item) => [item.id, item.quantity]));
 
     return (
       <>
         <JsonLd data={buildHomeJsonLd(raffles)} />
-        <RafflesGrid raffles={raffles} />
+        <RafflesGrid raffles={raffles} cartMap={cartMap} />
       </>
     );
   } catch {

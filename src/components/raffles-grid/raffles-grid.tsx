@@ -1,7 +1,13 @@
 import type { Raffle } from '@/lib/schemas/raffle';
 import { RafflesGridClient } from './raffles-grid-client';
 
-export default function RafflesGrid({ raffles }: { raffles: Raffle[] }) {
+export default function RafflesGrid({
+  raffles,
+  cartMap = new Map(),
+}: {
+  raffles: Raffle[];
+  cartMap?: Map<number, number>;
+}) {
   if (raffles.length === 0) {
     return (
       <section className="mx-auto max-w-3xl px-4 py-20 text-center">
@@ -33,7 +39,7 @@ export default function RafflesGrid({ raffles }: { raffles: Raffle[] }) {
         </p>
       </div>
       {/* Client island: search + price filter operate on server-fetched data */}
-      <RafflesGridClient raffles={raffles} />
+      <RafflesGridClient raffles={raffles} cartMap={cartMap} />
     </section>
   );
 }

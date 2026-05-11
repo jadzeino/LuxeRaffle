@@ -14,7 +14,13 @@ const PRICE_BUCKETS = [
   { label: 'Over €500', min: 500, max: Infinity },
 ] as const;
 
-export function RafflesGridClient({ raffles }: { raffles: Raffle[] }) {
+export function RafflesGridClient({
+  raffles,
+  cartMap = new Map(),
+}: {
+  raffles: Raffle[];
+  cartMap?: Map<number, number>;
+}) {
   const [query, setQuery] = useState('');
   const [bucketIndex, setBucketIndex] = useState(0);
 
@@ -91,7 +97,7 @@ export function RafflesGridClient({ raffles }: { raffles: Raffle[] }) {
         >
           {filtered.map((raffle, index) => (
             <RaffleCardTilt key={raffle.id}>
-              <RaffleTile raffle={raffle} index={index} />
+              <RaffleTile raffle={raffle} index={index} quantityInCart={cartMap.get(raffle.id) ?? 0} />
             </RaffleCardTilt>
           ))}
         </div>

@@ -1,7 +1,7 @@
 'use client';
 
-import { useId, useOptimistic, useState, useTransition } from 'react';
-import { ShoppingBag } from 'lucide-react';
+import { useId, useState, useTransition } from 'react';
+import { Check, ShoppingBag } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { addToCart } from '@/app/actions/cart';
@@ -11,13 +11,14 @@ export function AddToCartButton({
   raffleId,
   raffleName,
   disabled: disabledProp = false,
+  quantityInCart = 0,
 }: {
   raffleId: number;
   raffleName: string;
   disabled?: boolean;
+  quantityInCart?: number;
 }) {
   const [isPending, startTransition] = useTransition();
-  const [added, setAdded] = useOptimistic(false);
   const [announcement, setAnnouncement] = useState('');
   const [error, setError] = useState('');
   const liveRegionId = useId();
@@ -37,19 +38,27 @@ export function AddToCartButton({
     );
   }
 
+  const inCart = quantityInCart > 0 && !isPending;
+
   return (
     <>
       <Button
         type="button"
-        className="h-11 flex-1 border border-input bg-background text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground"
+        className={
+          inCart
+            ? 'h-11 flex-1 border border-emerald-600 bg-emerald-600 text-white shadow-sm hover:bg-emerald-700'
+            : 'h-11 flex-1 border border-input bg-background text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground'
+        }
         disabled={isPending}
         aria-describedby={liveRegionId}
-        aria-label={`Add ${raffleName} ticket to cart`}
+        aria-label={
+          inCart
+            ? `${raffleName} — ${quantityInCart} in cart, click to add more`
+            : `Add ${raffleName} ticket to cart`
+        }
         onClick={() => {
           startTransition(async () => {
-            setAdded(true);
             setError('');
-
             try {
               await addToCart(raffleId);
               setAnnouncement(`${raffleName} ticket added to cart.`);
@@ -67,8 +76,8 @@ export function AddToCartButton({
           });
         }}
       >
-        <ShoppingBag aria-hidden="true" />
-        {added ? 'Add more' : isPending ? 'Adding' : 'Add'}
+        {inCart ? <Check aria-hidden="true" /> : <ShoppingBag aria-hidden="true" />}
+        {isPending ? 'Adding' : inCart ? `In cart (${quantityInCart})` : 'Add'}
       </Button>
       <span id={liveRegionId} className="sr-only" aria-live="polite">
         {announcement}

@@ -6,7 +6,15 @@ import { Button } from '../ui/button';
 import { AddToCartButton } from '@/components/raffle/add-to-cart-button';
 import { formatCurrency, formatNumber } from '@/lib/utils/money';
 
-export default function RaffleTile({ raffle, index = 0 }: { raffle: Raffle; index?: number }) {
+export default function RaffleTile({
+  raffle,
+  index = 0,
+  quantityInCart = 0,
+}: {
+  raffle: Raffle;
+  index?: number;
+  quantityInCart?: number;
+}) {
   const soldPercentage = Math.round(
     ((raffle.totalTickets - raffle.availableTickets) / raffle.totalTickets) * 100,
   );
@@ -91,7 +99,7 @@ export default function RaffleTile({ raffle, index = 0 }: { raffle: Raffle; inde
           </div>
         </div>
         <div className="mt-4 grid grid-cols-2 gap-3">
-          <AddToCartButton raffleId={raffle.id} raffleName={raffle.name} disabled={isSoldOut} />
+          <AddToCartButton raffleId={raffle.id} raffleName={raffle.name} disabled={isSoldOut} quantityInCart={quantityInCart} />
           <Button
             className="h-11 bg-slate-950 text-white hover:bg-slate-800 dark:bg-primary dark:text-primary-foreground"
             asChild
