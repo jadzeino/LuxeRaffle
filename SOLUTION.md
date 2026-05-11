@@ -1,7 +1,5 @@
 # SOLUTION.md — LuxeRaffle Engineering Write-up
 
-> Ahmad Zeino · GitHub: [jadzeino](https://github.com/jadzeino)
-
 ---
 
 ## Table of contents
@@ -435,5 +433,4 @@ The challenge brief lists this for the follow-up session. The API already return
 
 ---
 
-*Built with Next.js 15, React 19, TypeScript, Tailwind CSS, Zod, Vitest, and Playwright.*  
-*GitHub: [jadzeino](https://github.com/jadzeino)*
+*Built with Next.js 15, React 19, TypeScript, Tailwind CSS, Zod, Vitest, and Playwright.*
