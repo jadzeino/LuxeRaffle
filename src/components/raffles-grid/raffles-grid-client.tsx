@@ -9,9 +9,9 @@ import { Input } from '@/components/ui/input';
 
 const PRICE_BUCKETS = [
   { label: 'All prices', min: 0, max: Infinity },
-  { label: 'Under €100', min: 0, max: 100 },
-  { label: '€100 – €500', min: 100, max: 500 },
-  { label: 'Over €500', min: 500, max: Infinity },
+  { label: 'Under €20', min: 0, max: 20 },
+  { label: '€20 – €100', min: 20, max: 100 },
+  { label: 'Over €100', min: 100, max: Infinity },
 ] as const;
 
 export function RafflesGridClient({
