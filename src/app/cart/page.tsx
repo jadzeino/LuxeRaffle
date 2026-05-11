@@ -19,8 +19,6 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = 'force-dynamic';
-
 // Async RSC — awaits getRaffles(), React cache() deduplicates the fetch
 // across CartLines + CartSidebar so only one network request is made.
 async function CartLines({ items }: { items: CartItem[] }) {

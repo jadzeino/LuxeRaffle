@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { fetchJson, fetchJsonWithRetry } from '@/lib/api/client';
+import { fetchJsonWithRetry } from '@/lib/api/client';
 import {
   rafflesSchema,
   type Raffle,

@@ -89,7 +89,7 @@ export async function fetchJsonWithRetry<TSchema extends z.ZodTypeAny>(
     // are mutually exclusive in Next.js — strip `next` before setting the flag.
     let attemptOptions: FetchJsonOptions = options;
     if (attempt > 0) {
-      const { next: _omit, ...rest } = options;
+      const { next: _, ...rest } = options;
       attemptOptions = { ...rest, cache: 'no-store' };
     }
 

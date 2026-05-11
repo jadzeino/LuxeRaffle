@@ -19,8 +19,6 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = 'force-dynamic';
-
 // Async RSC — all slow API calls (getOrders + getRaffles) live here so
 // the page shell (user header + logout) can stream out immediately.
 async function OrdersSection({ token }: { token: string | null }) {
