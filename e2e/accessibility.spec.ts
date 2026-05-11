@@ -5,6 +5,11 @@ import { gotoHomeWithRaffles } from './helpers';
 test('homepage has no serious automated accessibility violations', async ({
   page,
 }) => {
+  // Emulate reduced motion so the staggered card animations (opacity 0→1) are
+  // skipped. Without this, axe scans during an in-progress animation and sees
+  // blended colours on partially-transparent elements, producing false contrast
+  // failures on text that is actually fully legible.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await gotoHomeWithRaffles(page);
   await expect(
     page.getByRole('heading', { name: 'LuxeRaffle', level: 1 }),

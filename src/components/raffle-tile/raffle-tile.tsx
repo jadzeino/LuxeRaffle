@@ -1,10 +1,9 @@
 import type { Raffle } from '@/lib/schemas/raffle';
 import Image from 'next/image';
 import { Eye } from 'lucide-react';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
 import { AddToCartButton } from '@/components/raffle/add-to-cart-button';
 import { formatCurrency, formatNumber } from '@/lib/utils/money';
+import { cn } from '@/lib/cn';
 
 export default function RaffleTile({
   raffle,
@@ -42,14 +41,15 @@ export default function RaffleTile({
           className="object-cover object-center transition duration-500 hover:scale-[1.03] motion-reduce:hover:scale-100"
         />
         <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-4 pt-20">
-          <Badge
-            className={
+          <span
+            className={cn(
+              'inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold shadow-sm',
               isSoldOut
-                ? 'border-slate-600 bg-slate-700 text-white shadow-sm'
+                ? 'border-slate-600 bg-slate-700 text-white'
                 : isAlmostSoldOut
-                  ? 'border-red-700 bg-red-600 text-white shadow-sm transition-colors hover:bg-red-700'
-                  : 'border-slate-300 bg-slate-50 text-slate-950 shadow-sm transition-colors hover:bg-white'
-            }
+                  ? 'border-red-700 bg-red-600 text-white transition-colors hover:bg-red-700'
+                  : 'border-slate-300 bg-slate-50 text-slate-950 transition-colors hover:bg-white',
+            )}
           >
             {isAlmostSoldOut && (
               <span
@@ -58,7 +58,7 @@ export default function RaffleTile({
               />
             )}
             {statusLabel}
-          </Badge>
+          </span>
           <p className="shrink-0 text-xl font-bold text-white drop-shadow-sm sm:text-2xl">
             {formatCurrency(raffle.ticketPrice)}
           </p>
@@ -100,15 +100,20 @@ export default function RaffleTile({
         </div>
         <div className="mt-4 grid grid-cols-2 gap-3">
           <AddToCartButton raffleId={raffle.id} raffleName={raffle.name} disabled={isSoldOut} quantityInCart={quantityInCart} />
-          <Button
-            className="h-11 bg-slate-950 text-white hover:bg-slate-800 dark:bg-primary dark:text-primary-foreground"
-            asChild
+          <a
+            href="#raffles"
+            aria-label="View all raffles"
+            className={cn(
+              'inline-flex h-11 items-center justify-center gap-2 rounded-md px-4 py-2',
+              'text-sm font-semibold shadow transition-colors',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+              'bg-slate-950 text-white hover:bg-slate-800',
+              'dark:bg-white dark:text-slate-950 dark:hover:bg-slate-100',
+            )}
           >
-            <a href="#raffles" aria-label={`View all raffles`}>
-              <Eye aria-hidden="true" />
-              Details
-            </a>
-          </Button>
+            <Eye aria-hidden="true" />
+            Details
+          </a>
         </div>
       </div>
     </article>
