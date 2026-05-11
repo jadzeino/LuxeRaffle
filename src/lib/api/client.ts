@@ -85,8 +85,13 @@ export async function fetchJsonWithRetry<TSchema extends z.ZodTypeAny>(
       );
     }
 
-    const attemptOptions: FetchJsonOptions =
-      attempt > 0 ? { ...options, cache: 'no-store' } : options;
+    // On retry: force a fresh network hit. next.revalidate and cache:'no-store'
+    // are mutually exclusive in Next.js — strip `next` before setting the flag.
+    let attemptOptions: FetchJsonOptions = options;
+    if (attempt > 0) {
+      const { next: _omit, ...rest } = options;
+      attemptOptions = { ...rest, cache: 'no-store' };
+    }
 
     try {
       return await fetchJson(path, schema, attemptOptions);
